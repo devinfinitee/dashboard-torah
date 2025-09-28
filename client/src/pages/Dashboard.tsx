@@ -6,19 +6,19 @@ import { Clock, Trophy, BookOpen, Flame, TrendingUp } from "lucide-react";
 
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-w-full">
       {/* Search and filter bar */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex items-center gap-4 mb-4 sm:mb-6">
         <div className="flex items-center gap-2 text-muted-foreground">
-          <div className="w-6 h-6 bg-muted rounded flex items-center justify-center">
+          <div className="w-6 h-6 bg-muted rounded flex items-center justify-center flex-shrink-0">
             <div className="w-3 h-3 bg-primary rounded"></div>
           </div>
-          <span className="text-sm">Gemaron bene bavei</span>
+          <span className="text-sm truncate">Gemaron bene bavei</span>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         <StatCard 
           icon={Clock} 
           value="50" 
@@ -46,9 +46,9 @@ export default function Dashboard() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Left Column - Torah Portion and Lessons */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6">
           <TorahPortionCard
             title="Weekly Torah Portion"
             subtitle="Parashat HaShawua"
@@ -60,7 +60,7 @@ export default function Dashboard() {
           />
 
           {/* Lesson Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <LessonCard
               title="Mishnah"
               subtitle="Beginner to Advanced"
@@ -75,47 +75,47 @@ export default function Dashboard() {
         </div>
 
         {/* Right Column - Analytics and Insights */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <ProgressChart
             title="Progress Over Time"
             timeframe="Today"
           />
 
           {/* Deep Analytics */}
-          <div className="bg-card rounded-lg p-6 border border-card-border">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Deep Analytics</h3>
-            <p className="text-sm text-muted-foreground mb-4">Total time studied length: 45 min.</p>
+          <div className="bg-card rounded-lg p-4 sm:p-6 border border-card-border">
+            <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-3 sm:mb-4">Deep Analytics</h3>
+            <p className="text-sm text-muted-foreground mb-3 sm:mb-4">Total time studied length: 45 min.</p>
             
-            <div className="flex items-center gap-2 mb-4">
-              <Flame className="w-5 h-5 text-orange-500" />
-              <span className="font-semibold">24-Day Streak</span>
+            <div className="flex items-center gap-2 mb-3 sm:mb-4">
+              <Flame className="w-5 h-5 text-orange-500 flex-shrink-0" />
+              <span className="font-semibold text-sm sm:text-base">24-Day Streak</span>
             </div>
           </div>
 
           {/* Personalized Insights */}
-          <div className="bg-card rounded-lg p-6 border border-card-border">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Personalized Insights</h3>
+          <div className="bg-card rounded-lg p-4 sm:p-6 border border-card-border">
+            <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-3 sm:mb-4">Personalized Insights</h3>
             
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div className="flex gap-3">
                 <BookOpen className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm">You are strongest in Parashat Vayera Midrashic insights, but review Mishah Oral Law foundations.</p>
+                <div className="min-w-0">
+                  <p className="text-sm break-words">You are strongest in Parashat Vayera Midrashic insights, but review Mishah Oral Law foundations.</p>
                 </div>
               </div>
               
               <div className="flex gap-3">
                 <Trophy className="w-5 h-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm">You are strongest in Parashat Vayera Midrashic insights...</p>
+                <div className="min-w-0">
+                  <p className="text-sm break-words">You are strongest in Parashat Vayera Midrashic insights...</p>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Deep Analytics - Bottom */}
-          <div className="bg-card rounded-lg p-6 border border-card-border">
-            <h3 className="text-lg font-semibold text-card-foreground mb-4">Deep Analytics</h3>
+          <div className="bg-card rounded-lg p-4 sm:p-6 border border-card-border">
+            <h3 className="text-base sm:text-lg font-semibold text-card-foreground mb-3 sm:mb-4">Deep Analytics</h3>
             <p className="text-sm text-muted-foreground">Total time studied length: 45 min.</p>
           </div>
         </div>

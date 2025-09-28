@@ -25,20 +25,20 @@ export default function StatCard({ icon: Icon, value, label, color = "yellow" }:
   return (
     <div 
       data-testid={`stat-card-${label.toLowerCase().replace(/\s+/g, '-')}`}
-      className={`${colorClasses[color]} rounded-lg p-6 text-white relative overflow-hidden`}
+      className={`${colorClasses[color]} rounded-lg p-4 sm:p-6 text-white relative overflow-hidden min-h-[100px] sm:min-h-[120px]`}
     >
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="text-2xl font-bold mb-1">{value}</div>
-          <div className="text-sm font-medium opacity-90">{label}</div>
+      <div className="flex items-center justify-between h-full">
+        <div className="flex-1 min-w-0">
+          <div className="text-xl sm:text-2xl font-bold mb-1 truncate">{value}</div>
+          <div className="text-xs sm:text-sm font-medium opacity-90 leading-tight">{label}</div>
         </div>
-        <div className={`p-3 rounded-lg bg-white/20 ${iconColorClasses[color]}`}>
-          <Icon className="w-6 h-6" />
+        <div className={`p-2 sm:p-3 rounded-lg bg-white/20 ${iconColorClasses[color]} flex-shrink-0 ml-2`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
       </div>
       
       {/* Decorative background pattern */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-16 translate-x-16"></div>
+      <div className="absolute top-0 right-0 w-24 h-24 sm:w-32 sm:h-32 bg-white/5 rounded-full -translate-y-12 translate-x-12 sm:-translate-y-16 sm:translate-x-16"></div>
     </div>
   );
 }

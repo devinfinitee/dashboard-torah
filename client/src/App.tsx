@@ -56,7 +56,6 @@ function App() {
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-    console.log('Sidebar toggled:', !sidebarOpen);
   };
 
   return (
@@ -66,14 +65,16 @@ function App() {
           <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
           
           <div 
-            className={`flex-1 flex flex-col transition-all duration-300 ${
+            className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${
               isMobile ? 'ml-0' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
             }`}
           >
             <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
             
             <main className="flex-1 overflow-auto">
-              <Router />
+              <div className="min-h-full">
+                <Router />
+              </div>
             </main>
           </div>
         </div>
