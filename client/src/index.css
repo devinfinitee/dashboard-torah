@@ -157,6 +157,33 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground;
+    /* Prevent horizontal scrolling on mobile */
+    overflow-x: hidden;
+    /* Improve touch scrolling on iOS */
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Ensure full height on mobile devices */
+  html, body, #root {
+    height: 100%;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+
+  /* Mobile-specific improvements */
+  @media (max-width: 1023px) {
+    body {
+      /* Prevent zoom on input focus on iOS */
+      -webkit-text-size-adjust: 100%;
+      /* Improve tap targets */
+      touch-action: manipulation;
+    }
+    
+    /* Ensure sidebar doesn't cause horizontal scroll */
+    .sidebar-container {
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+    }
   }
 }
 

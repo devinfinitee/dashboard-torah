@@ -35,6 +35,18 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [location] = useLocation();
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(!isOpen);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     if (sidebarRef.current) {
@@ -45,12 +57,20 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       const tl = gsap.timeline();
       
       if (isOpen) {
-        // First animate sidebar width
-        tl.to(sidebarRef.current, {
-          width: "280px",
-          duration: 0.3,
-          ease: "power3.out"
-        });
+        // Mobile: slide in from left, Desktop: expand width
+        if (isMobile) {
+          tl.to(sidebarRef.current, {
+            x: 0,
+            duration: 0.3,
+            ease: "power3.out"
+          });
+        } else {
+          tl.to(sidebarRef.current, {
+            width: "280px",
+            duration: 0.3,
+            ease: "power3.out"
+          });
+        }
         
         // Set collapsed to false immediately when opening
         tl.call(() => setCollapsed(false), [], "+=0.1");
@@ -86,12 +106,20 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         // Set collapsed to true
         tl.call(() => setCollapsed(true), [], "+=0.05");
         
-        // Then animate sidebar width
-        tl.to(sidebarRef.current, {
-          width: "64px",
-          duration: 0.3,
-          ease: "power3.out"
-        }, "+=0.05");
+        // Then animate sidebar
+        if (isMobile) {
+          tl.to(sidebarRef.current, {
+            x: "-100%",
+            duration: 0.3,
+            ease: "power3.out"
+          }, "+=0.05");
+        } else {
+          tl.to(sidebarRef.current, {
+            width: "64px",
+            duration: 0.3,
+            ease: "power3.out"
+          }, "+=0.05");
+        }
       }
     }
   }, [isOpen]);
@@ -108,8 +136,12 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       
       <div
         ref={sidebarRef}
-        className="fixed left-0 top-0 h-full bg-sidebar border-r border-sidebar-border z-50 overflow-hidden transition-all duration-300"
-        style={{ width: isOpen ? "280px" : "64px" }}
+        className={`fixed left-0 top-0 h-full bg-sidebar border-r border-sidebar-border z-50 overflow-hidden transition-all duration-300 ${
+          isMobile 
+            ? 'w-80 transform -translate-x-full' 
+            : isOpen ? 'w-[280px]' : 'w-16'
+        }`}
+        style={isMobile ? { transform: isOpen ? 'translateX(0)' : 'translateX(-100%)' } : {}}
       >
         {/* Header */}
         <div className={`flex items-center border-b border-sidebar-border ${collapsed ? 'justify-center p-4' : 'gap-3 p-4'}`}>

@@ -33,14 +33,18 @@ function Router() {
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(false);
 
-  // Check for mobile screen size
+  // Check for mobile screen size with better detection
   useEffect(() => {
     const checkScreenSize = () => {
-      const mobile = window.innerWidth < 1024;
+      const mobile = window.innerWidth < 1024 || 
+                    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                    (window.innerWidth < 1200 && window.innerHeight < 800);
+      
       setIsMobile(mobile);
-      // Auto-open sidebar on desktop only if not manually closed
+      
+      // Auto-open sidebar on desktop only
       if (!mobile && window.innerWidth >= 1024) {
         setSidebarOpen(true);
       } else if (mobile) {
@@ -66,13 +70,13 @@ function App() {
           
           <div 
             className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${
-              isMobile ? 'ml-0' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
+              isMobile ? 'ml-0 w-full' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
             }`}
           >
             <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
             
             <main className="flex-1 overflow-auto">
-              <div className="min-h-full">
+              <div className="min-h-full w-full">
                 <Router />
               </div>
             </main>

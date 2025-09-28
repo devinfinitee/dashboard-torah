@@ -13,12 +13,16 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
 
   useEffect(() => {
     if (menuButtonRef.current) {
-      // Only animate after initial load
-      const initialRotation = window.innerWidth >= 1024 ? 0 : 90;
-      gsap.set(menuButtonRef.current, { rotation: sidebarOpen ? 0 : initialRotation });
+      // Always show menu button on mobile, regardless of desktop site setting
+      const isMobile = window.innerWidth < 1024 || 
+                      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                      (window.innerWidth < 1200 && window.innerHeight < 800); // Catch tablet/small desktop
+      
+      const initialRotation = isMobile ? 0 : (sidebarOpen ? 0 : 90);
+      gsap.set(menuButtonRef.current, { rotation: initialRotation });
       
       gsap.to(menuButtonRef.current, {
-        rotation: sidebarOpen ? 0 : 90,
+        rotation: sidebarOpen ? 0 : (isMobile ? 0 : 90),
         duration: 0.3,
         ease: "power2.out"
       });
@@ -47,12 +51,13 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
 
   return (
     <header className="h-14 sm:h-16 bg-background border-b border-border flex items-center justify-between px-3 sm:px-4 gap-2 sm:gap-4 relative z-30">
-      {/* Left side - Enhanced Menu button */}
+      {/* Left side - Enhanced Menu button - Always visible on mobile */}
       <button
         ref={menuButtonRef}
         data-testid="button-menu-toggle"
         onClick={handleMenuClick}
-        className="p-2 sm:p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200 active:scale-95 flex-shrink-0"
+        className="p-2 sm:p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200 active:scale-95 flex-shrink-0 lg:block"
+        style={{ display: 'block' }} // Force display on all devices
       >
         <Menu className="w-5 h-5" />
       </button>
