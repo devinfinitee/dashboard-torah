@@ -36,6 +36,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(!isOpen);
   const [isMobile, setIsMobile] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Check if device is mobile
   useEffect(() => {
@@ -64,12 +65,16 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   }, [isOpen, isMobile]);
 
   useEffect(() => {
-    if (sidebarRef.current) {
+    if (sidebarRef.current && !isAnimating) {
+      setIsAnimating(true);
+      
       // Kill any existing animations
       gsap.killTweensOf('.sidebar-text');
       gsap.killTweensOf(sidebarRef.current);
       
-      const tl = gsap.timeline();
+      const tl = gsap.timeline({
+        onComplete: () => setIsAnimating(false)
+      });
       
       if (isOpen) {
         // Set collapsed to false immediately when opening
@@ -78,7 +83,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         // Mobile: slide in from left, Desktop: expand width
         if (isMobile) {
           // Reset any transform and ensure full width
-          gsap.set(sidebarRef.current, { width: "320px", x: 0 });
+          gsap.set(sidebarRef.current, { width: "320px" });
           tl.fromTo(sidebarRef.current, 
             { x: "-100%" },
             {
@@ -147,10 +152,16 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   return (
     <>
       {/* Mobile overlay */}
-      {isOpen && (
+      {isOpen && isMobile && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onToggle}
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!isAnimating) {
+              onToggle();
+            }
+          }}
         />
       )}
       
@@ -206,6 +217,15 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                     }
                   `}
                   title={collapsed ? item.label : undefined}
+                  onClick={(e) => {
+                    // Auto-collapse sidebar on mobile when link is clicked
+                    if (isMobile && isOpen && !isAnimating) {
+                      // Small delay to allow navigation to start
+                      setTimeout(() => {
+                        onToggle();
+                      }, 100);
+                    }
+                  }}
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
                   {!collapsed && (
