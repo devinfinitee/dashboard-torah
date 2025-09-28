@@ -48,6 +48,21 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
+  // Manage body scroll on mobile when sidebar is open
+  useEffect(() => {
+    if (isMobile) {
+      if (isOpen) {
+        document.body.classList.add('sidebar-open');
+      } else {
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+    
+    return () => {
+      document.body.classList.remove('sidebar-open');
+    };
+  }, [isOpen, isMobile]);
+
   useEffect(() => {
     if (sidebarRef.current) {
       // Kill any existing animations
@@ -57,13 +72,21 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       const tl = gsap.timeline();
       
       if (isOpen) {
+        // Set collapsed to false immediately when opening
+        setCollapsed(false);
+        
         // Mobile: slide in from left, Desktop: expand width
         if (isMobile) {
-          tl.to(sidebarRef.current, {
-            x: 0,
-            duration: 0.3,
-            ease: "power3.out"
-          });
+          // Reset any transform and ensure full width
+          gsap.set(sidebarRef.current, { width: "320px", x: 0 });
+          tl.fromTo(sidebarRef.current, 
+            { x: "-100%" },
+            {
+              x: 0,
+              duration: 0.3,
+              ease: "power3.out"
+            }
+          );
         } else {
           tl.to(sidebarRef.current, {
             width: "280px",
@@ -71,9 +94,6 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             ease: "power3.out"
           });
         }
-        
-        // Set collapsed to false immediately when opening
-        tl.call(() => setCollapsed(false), [], "+=0.1");
         
         // Then animate text in
         tl.call(() => {
@@ -90,7 +110,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
               }
             );
           }
-        }, [], "+=0.05");
+        }, [], "+=0.1");
       } else {
         // First hide text
         const textElements = sidebarRef.current.querySelectorAll('.sidebar-text');
@@ -103,7 +123,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           });
         }
         
-        // Set collapsed to true
+        // Set collapsed to true after text animation
         tl.call(() => setCollapsed(true), [], "+=0.05");
         
         // Then animate sidebar
@@ -122,7 +142,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         }
       }
     }
-  }, [isOpen]);
+  }, [isOpen, isMobile]);
 
   return (
     <>
@@ -136,12 +156,15 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       
       <div
         ref={sidebarRef}
-        className={`fixed left-0 top-0 h-full bg-sidebar border-r border-sidebar-border z-50 overflow-hidden transition-all duration-300 ${
+        className={`fixed left-0 top-0 h-full bg-sidebar border-r border-sidebar-border z-50 overflow-hidden sidebar-container ${
           isMobile 
-            ? 'w-80 transform -translate-x-full' 
+            ? 'w-80' 
             : isOpen ? 'w-[280px]' : 'w-16'
         }`}
-        style={isMobile ? { transform: isOpen ? 'translateX(0)' : 'translateX(-100%)' } : {}}
+        style={isMobile ? { 
+          transform: isOpen ? 'translateX(0)' : 'translateX(-100%)',
+          width: '320px' // Ensure full width on mobile
+        } : {}}
       >
         {/* Header */}
         <div className={`flex items-center border-b border-sidebar-border ${collapsed ? 'justify-center p-4' : 'gap-3 p-4'}`}>

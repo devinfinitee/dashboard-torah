@@ -183,6 +183,18 @@
     .sidebar-container {
       transform: translateZ(0);
       -webkit-transform: translateZ(0);
+      /* Force hardware acceleration */
+      will-change: transform;
+      /* Ensure proper positioning */
+      min-width: 320px !important;
+      max-width: 320px !important;
+    }
+    
+    /* Prevent body scroll when sidebar is open */
+    body.sidebar-open {
+      overflow: hidden;
+      position: fixed;
+      width: 100%;
     }
   }
 }
