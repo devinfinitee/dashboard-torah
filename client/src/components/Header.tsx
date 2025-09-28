@@ -1,12 +1,29 @@
 import { Search, Bell, Menu, Sun, Moon } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import { gsap } from "gsap";
 
 interface HeaderProps {
   onMenuClick: () => void;
+  sidebarOpen: boolean;
 }
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
   const [isDark, setIsDark] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (menuButtonRef.current) {
+      // Only animate after initial load
+      const initialRotation = window.innerWidth >= 1024 ? 0 : 90;
+      gsap.set(menuButtonRef.current, { rotation: sidebarOpen ? 0 : initialRotation });
+      
+      gsap.to(menuButtonRef.current, {
+        rotation: sidebarOpen ? 0 : 90,
+        duration: 0.3,
+        ease: "power2.out"
+      });
+    }
+  }, [sidebarOpen]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -14,13 +31,28 @@ export default function Header({ onMenuClick }: HeaderProps) {
     console.log('Theme toggled to:', isDark ? 'light' : 'dark');
   };
 
+  const handleMenuClick = () => {
+    // Add click animation
+    if (menuButtonRef.current) {
+      gsap.to(menuButtonRef.current, {
+        scale: 0.9,
+        duration: 0.1,
+        yoyo: true,
+        repeat: 1,
+        ease: "power2.out"
+      });
+    }
+    onMenuClick();
+  };
+
   return (
-    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 gap-4">
-      {/* Left side - Menu button */}
+    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-4 gap-4 relative z-30">
+      {/* Left side - Enhanced Menu button */}
       <button
+        ref={menuButtonRef}
         data-testid="button-menu-toggle"
-        onClick={onMenuClick}
-        className="p-2 rounded-lg hover:bg-accent hover:text-accent-foreground lg:hidden"
+        onClick={handleMenuClick}
+        className="p-3 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200 active:scale-95"
       >
         <Menu className="w-5 h-5" />
       </button>

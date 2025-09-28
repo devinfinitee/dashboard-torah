@@ -38,12 +38,49 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
 
   useEffect(() => {
     if (sidebarRef.current) {
-      gsap.to(sidebarRef.current, {
+      // Kill any existing animations
+      gsap.killTweensOf('.sidebar-text');
+      
+      const tl = gsap.timeline();
+      
+      // Animate sidebar width
+      tl.to(sidebarRef.current, {
         width: isOpen ? "280px" : "64px",
-        duration: 0.3,
-        ease: "power2.out"
+        duration: 0.4,
+        ease: "power3.out"
       });
-      setCollapsed(!isOpen);
+      
+      if (isOpen) {
+        setCollapsed(false);
+        // Delay text animation until after sidebar opens
+        tl.call(() => {
+          const textElements = sidebarRef.current?.querySelectorAll('.sidebar-text');
+          if (textElements && textElements.length > 0) {
+            gsap.fromTo(textElements, 
+              { opacity: 0, x: -20 },
+              {
+                opacity: 1,
+                x: 0,
+                duration: 0.3,
+                stagger: 0.05,
+                ease: "power2.out"
+              }
+            );
+          }
+        }, [], "+=0.1");
+      } else {
+        // Hide text immediately when closing
+        const textElements = sidebarRef.current.querySelectorAll('.sidebar-text');
+        if (textElements && textElements.length > 0) {
+          gsap.to(textElements, {
+            opacity: 0,
+            x: -20,
+            duration: 0.2,
+            ease: "power2.in"
+          });
+        }
+        tl.call(() => setCollapsed(true), [], "+=0.2");
+      }
     }
   }, [isOpen]);
 
@@ -68,7 +105,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
             <ScrollText className="w-5 h-5 text-primary-foreground" />
           </div>
           {!collapsed && (
-            <span className="text-lg font-semibold text-sidebar-foreground">
+            <span className="sidebar-text text-lg font-semibold text-sidebar-foreground">
               Torah Bot
             </span>
           )}
@@ -77,7 +114,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         {/* Navigation */}
         <div className="p-4 space-y-2">
           {!collapsed && (
-            <div className="text-xs text-sidebar-foreground/60 mb-4 uppercase tracking-wider">
+            <div className="sidebar-text text-xs text-sidebar-foreground/60 mb-4 uppercase tracking-wider">
               Main Menu
             </div>
           )}
@@ -100,7 +137,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                 >
                   <Icon className="w-5 h-5 flex-shrink-0" />
                   {!collapsed && (
-                    <span className="text-sm font-medium">{item.label}</span>
+                    <span className="sidebar-text text-sm font-medium">{item.label}</span>
                   )}
                   {!collapsed && item.path !== "/" && (
                     <div className="ml-auto">

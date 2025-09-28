@@ -1,7 +1,11 @@
+import { useState } from "react";
 import StudySession from "@/components/StudySession";
+import TorahBotModal from "@/components/TorahBotModal";
 import { Star, Download, MessageCircle } from "lucide-react";
 
 export default function WeeklyPortion() {
+  const [isBotModalOpen, setIsBotModalOpen] = useState(false);
+  
   const sessions = [
     { title: "Parashat Lech Lecha", date: "2/4B 1.2025", status: "completed" as const },
     { title: "Vayerat Vayera", date: "2/4B 1.2/24", status: "completed" as const },
@@ -72,7 +76,7 @@ export default function WeeklyPortion() {
             </button>
             <button
               data-testid="button-ask-question"
-              onClick={() => console.log('Ask follow-up question clicked')}
+              onClick={() => setIsBotModalOpen(true)}
               className="flex items-center gap-2 px-4 py-2 bg-accent text-accent-foreground rounded-lg hover:bg-accent/90"
             >
               <MessageCircle className="w-4 h-4" />
@@ -148,6 +152,12 @@ export default function WeeklyPortion() {
           </div>
         </div>
       </div>
+
+      {/* Torah Bot Modal */}
+      <TorahBotModal 
+        isOpen={isBotModalOpen} 
+        onClose={() => setIsBotModalOpen(false)} 
+      />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -32,7 +32,27 @@ function Router() {
 }
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+
+  // Check for mobile screen size
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      // Auto-open sidebar on desktop only if not manually closed
+      if (!mobile && window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else if (mobile) {
+        setSidebarOpen(false);
+      }
+    };
+
+    // Initial check
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -42,16 +62,15 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="flex h-screen bg-background">
+        <div className="flex h-screen bg-background overflow-hidden">
           <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
           
           <div 
-            className="flex-1 flex flex-col transition-all duration-300"
-            style={{ 
-              marginLeft: sidebarOpen ? "280px" : "64px",
-            }}
+            className={`flex-1 flex flex-col transition-all duration-300 ${
+              isMobile ? 'ml-0' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
+            }`}
           >
-            <Header onMenuClick={toggleSidebar} />
+            <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
             
             <main className="flex-1 overflow-auto">
               <Router />

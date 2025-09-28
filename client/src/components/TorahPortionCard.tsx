@@ -53,8 +53,8 @@ export default function TorahPortionCard({
 
       {/* Study levels */}
       <div className="grid grid-cols-4 gap-4 mb-6">
-        {['Beginner', 'Intermediate', 'Advanced', 'Advanced'].map((level, index) => (
-          <div key={level} className="text-center">
+        {['Beginner', 'Intermediate', 'Advanced', 'Expert'].map((level, index) => (
+          <div key={`${level}-${index}`} className="text-center">
             <div className="text-xs text-amber-200 mb-1">{level}</div>
           </div>
         ))}
