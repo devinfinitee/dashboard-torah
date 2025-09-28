@@ -78,13 +78,14 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
 
       {/* Right side - Theme toggle, notifications, user */}
       <div className="flex items-center gap-1 sm:gap-3">
-        {/* Theme toggle - hidden on very small screens */}
+        {/* Theme toggle - Always visible on mobile and desktop */}
         <button
           data-testid="button-theme-toggle"
           onClick={toggleTheme}
-          className="hidden xs:block p-2 rounded-lg hover:bg-accent hover:text-accent-foreground"
+          className="p-2 rounded-lg hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+          aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
         >
-          {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          {isDark ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
         </button>
 
         {/* Notifications */}
