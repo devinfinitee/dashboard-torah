@@ -10,7 +10,8 @@ import {
   ScrollText,
   Calendar,
   Settings,
-  HelpCircle
+  HelpCircle,
+  X
 } from "lucide-react";
 
 interface SidebarProps {
@@ -65,86 +66,102 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   }, [isOpen, isMobile]);
 
   useEffect(() => {
-    if (sidebarRef.current && !isAnimating) {
+    if (sidebarRef.current) {
+      // Prevent multiple animations
+      if (isAnimating) return;
+      
       setIsAnimating(true);
       
-      // Kill any existing animations
+      // Kill any existing animations completely
       gsap.killTweensOf('.sidebar-text');
       gsap.killTweensOf(sidebarRef.current);
+      gsap.set('.sidebar-text', { clearProps: "all" });
       
       const tl = gsap.timeline({
-        onComplete: () => setIsAnimating(false)
+        onComplete: () => {
+          setIsAnimating(false);
+          // Ensure final state is correct
+          if (isOpen) {
+            setCollapsed(false);
+          } else {
+            setCollapsed(true);
+          }
+        }
       });
       
       if (isOpen) {
-        // Set collapsed to false immediately when opening
+        // Opening animation
         setCollapsed(false);
         
-        // Mobile: slide in from left, Desktop: expand width
         if (isMobile) {
-          // Reset any transform and ensure full width
-          gsap.set(sidebarRef.current, { width: "320px" });
-          tl.fromTo(sidebarRef.current, 
-            { x: "-100%" },
-            {
-              x: 0,
-              duration: 0.3,
-              ease: "power3.out"
-            }
-          );
+          // Mobile: slide in from left
+          gsap.set(sidebarRef.current, { 
+            width: "320px",
+            x: "-100%"
+          });
+          
+          tl.to(sidebarRef.current, {
+            x: 0,
+            duration: 0.35,
+            ease: "power3.out"
+          });
         } else {
+          // Desktop: expand width
           tl.to(sidebarRef.current, {
             width: "280px",
-            duration: 0.3,
+            duration: 0.35,
             ease: "power3.out"
           });
         }
         
-        // Then animate text in
+        // Animate text in with delay
         tl.call(() => {
           const textElements = sidebarRef.current?.querySelectorAll('.sidebar-text');
           if (textElements && textElements.length > 0) {
             gsap.fromTo(textElements, 
-              { opacity: 0, x: -20 },
+              { opacity: 0, x: -15 },
               {
                 opacity: 1,
                 x: 0,
-                duration: 0.25,
-                stagger: 0.03,
+                duration: 0.3,
+                stagger: 0.04,
                 ease: "power2.out"
               }
             );
           }
-        }, [], "+=0.1");
+        }, [], "+=0.15");
+        
       } else {
-        // First hide text
+        // Closing animation
         const textElements = sidebarRef.current.querySelectorAll('.sidebar-text');
+        
+        // Hide text first
         if (textElements && textElements.length > 0) {
           tl.to(textElements, {
             opacity: 0,
-            x: -20,
-            duration: 0.15,
+            x: -15,
+            duration: 0.2,
             ease: "power2.in"
           });
         }
-        
-        // Set collapsed to true after text animation
-        tl.call(() => setCollapsed(true), [], "+=0.05");
         
         // Then animate sidebar
         if (isMobile) {
           tl.to(sidebarRef.current, {
             x: "-100%",
-            duration: 0.3,
-            ease: "power3.out"
-          }, "+=0.05");
+            duration: 0.35,
+            ease: "power3.in"
+          }, "+=0.1");
         } else {
           tl.to(sidebarRef.current, {
             width: "64px",
-            duration: 0.3,
-            ease: "power3.out"
-          }, "+=0.05");
+            duration: 0.35,
+            ease: "power3.in"
+          }, "+=0.1");
         }
+        
+        // Set collapsed state
+        tl.call(() => setCollapsed(true), [], "+=0.1");
       }
     }
   }, [isOpen, isMobile]);
@@ -155,11 +172,20 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
       {isOpen && isMobile && (
         <div 
           className="fixed inset-0 bg-black/50 z-40 lg:hidden transition-opacity duration-300"
+          onTouchStart={(e) => {
+            e.preventDefault();
+            if (!isAnimating) {
+              onToggle();
+            }
+          }}
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             if (!isAnimating) {
-              onToggle();
+              // Add small delay to prevent glitching
+              setTimeout(() => {
+                onToggle();
+              }, 50);
             }
           }}
         />
@@ -178,14 +204,33 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         } : {}}
       >
         {/* Header */}
-        <div className={`flex items-center border-b border-sidebar-border ${collapsed ? 'justify-center p-4' : 'gap-3 p-4'}`}>
-          <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg flex-shrink-0">
-            <ScrollText className="w-5 h-5 text-primary-foreground" />
+        <div className={`flex items-center border-b border-sidebar-border ${collapsed ? 'justify-center p-4' : 'justify-between p-4'}`}>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center justify-center w-8 h-8 bg-primary rounded-lg flex-shrink-0">
+              <ScrollText className="w-5 h-5 text-primary-foreground" />
+            </div>
+            {!collapsed && (
+              <span className="sidebar-text text-lg font-semibold text-sidebar-foreground whitespace-nowrap">
+                Torah Bot
+              </span>
+            )}
           </div>
-          {!collapsed && (
-            <span className="sidebar-text text-lg font-semibold text-sidebar-foreground whitespace-nowrap">
-              Torah Bot
-            </span>
+          
+          {/* Close button - visible on mobile when sidebar is open */}
+          {!collapsed && isMobile && (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!isAnimating) {
+                  onToggle();
+                }
+              }}
+              className="p-2 rounded-lg hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors duration-200 flex-shrink-0"
+              aria-label="Close sidebar"
+            >
+              <X className="w-5 h-5" />
+            </button>
           )}
         </div>
 
