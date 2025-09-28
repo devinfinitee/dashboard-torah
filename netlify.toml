@@ -1,0 +1,16 @@
+[build]
+  command = "npm install && npm run build:client"
+  publish = "dist/public"
+  ignore = "server/"
+
+[build.environment]
+  NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  command = "npm run dev:client"
+  port = 5173

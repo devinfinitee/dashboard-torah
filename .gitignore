@@ -3,4 +3,7 @@ dist
 .DS_Store
 server/public
 vite.config.ts.*
+
+# Uncomment the line below if you want to exclude server from deployment
+server/
 *.tar.gz
