@@ -5,16 +5,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
+  const { signup } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just navigate to dashboard
-    // TODO: Add actual registration logic
+    // Accept any credentials and sign up
+    signup(username, password);
+    // Navigate to dashboard
     setLocation("/");
   };
 

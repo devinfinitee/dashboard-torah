@@ -8,19 +8,26 @@ FIRST TIME SETUP:
 
 RUNNING THE APP:
 1. Double-click "start-dev.bat"
-2. Open your browser to: http://localhost:5173/login
+2. Open your browser to: http://localhost:5173/
+3. You'll see the signup page (default landing page)
+4. Enter ANY username and password
+5. Click "Create Account" to access the dashboard
 
 PAGES AVAILABLE:
-- Login:    http://localhost:5173/login
-- Signup:   http://localhost:5173/signup
-- Dashboard: http://localhost:5173/
+- Signup (Default): http://localhost:5173/
+- Login:            http://localhost:5173/login
+- Dashboard:        http://localhost:5173/ (after authentication)
 
 FEATURES:
+✓ Signup is the default landing page
+✓ Any credentials are accepted (no validation)
+✓ Protected dashboard - must signup/login first
 ✓ Login page with username/password
 ✓ Signup page with username/password
 ✓ Links between login and signup
 ✓ Beautiful Torah Bot design
 ✓ Fully responsive
+✓ Persistent authentication (stays logged in)
 
 NEED HELP?
 See WINDOWS_SETUP.md for detailed instructions

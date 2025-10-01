@@ -14,36 +14,52 @@ Double-click: **`start-dev.bat`**
 
 Once the server starts, open your browser to:
 
-### **Login Page**
+### **Default Landing Page (Signup)**
 ```
-http://localhost:5173/login
+http://localhost:5173/
 ```
+*Automatically redirects to signup page*
 
 ### **Signup Page**
 ```
 http://localhost:5173/signup
 ```
 
-### **Dashboard** (after login)
+### **Login Page**
+```
+http://localhost:5173/login
+```
+
+### **Dashboard** (after authentication)
 ```
 http://localhost:5173/
 ```
+*Only accessible after logging in or signing up*
 
 ---
 
 ## ✨ What's New
+
+### 🔐 Authentication System
+- **Signup is the default landing page**
+- **Any credentials are accepted** (no validation)
+- **Protected dashboard routes** - must login/signup first
+- **Persistent authentication** - stays logged in after refresh
 
 ### Login Page (`/login`)
 - Username field
 - Password field
 - "Sign In" button
 - Link to signup page
+- Accepts any credentials
 
 ### Signup Page (`/signup`)
 - Username field
 - Password field
 - "Create Account" button
 - Link to login page
+- Accepts any credentials
+- **Default landing page**
 
 ### Design Features
 - ✅ Torah Bot branding with gold accent color
@@ -51,6 +67,7 @@ http://localhost:5173/
 - ✅ Responsive design (mobile, tablet, desktop)
 - ✅ Matches existing dashboard design
 - ✅ No sidebar/header on auth pages for focused experience
+- ✅ Protected routes redirect to signup if not authenticated
 
 ---
 

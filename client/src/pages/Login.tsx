@@ -5,16 +5,19 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { BookOpen } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login() {
   const [, setLocation] = useLocation();
+  const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, just navigate to dashboard
-    // TODO: Add actual authentication logic
+    // Accept any credentials and log in
+    login(username, password);
+    // Navigate to dashboard
     setLocation("/");
   };
 
