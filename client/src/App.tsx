@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -11,11 +11,15 @@ import Dashboard from "@/pages/Dashboard";
 import WeeklyPortion from "@/pages/WeeklyPortion";
 import History from "@/pages/History";
 import Profile from "@/pages/Profile";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
     <Switch>
+      <Route path="/login" component={Login} />
+      <Route path="/signup" component={Signup} />
       <Route path="/" component={Dashboard} />
       <Route path="/weekly-portion" component={WeeklyPortion} />
       <Route path="/history" component={History} />
@@ -32,8 +36,12 @@ function Router() {
 }
 
 function App() {
+  const [location] = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  // Check if current route is auth page (login/signup)
+  const isAuthPage = location === "/login" || location === "/signup";
 
   // Check for mobile screen size with better detection
   useEffect(() => {
@@ -65,25 +73,34 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="flex h-screen bg-background overflow-hidden">
-          <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
-          
-          <div 
-            className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${
-              isMobile ? 'ml-0 w-full' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
-            }`}
-          >
-            <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
-            
-            <main className="flex-1 overflow-auto">
-              <div className="min-h-full w-full">
-                <Router />
-              </div>
-            </main>
+        {isAuthPage ? (
+          // Auth pages (Login/Signup) - no sidebar or header
+          <div className="flex h-screen bg-background overflow-hidden">
+            <Router />
+            <Toaster />
           </div>
-        </div>
-        
-        <Toaster />
+        ) : (
+          // Dashboard pages - with sidebar and header
+          <div className="flex h-screen bg-background overflow-hidden">
+            <Sidebar isOpen={sidebarOpen} onToggle={toggleSidebar} />
+            
+            <div 
+              className={`flex-1 flex flex-col transition-all duration-300 min-w-0 ${
+                isMobile ? 'ml-0 w-full' : (sidebarOpen ? 'ml-[280px]' : 'ml-16')
+              }`}
+            >
+              <Header onMenuClick={toggleSidebar} sidebarOpen={sidebarOpen} />
+              
+              <main className="flex-1 overflow-auto">
+                <div className="min-h-full w-full">
+                  <Router />
+                </div>
+              </main>
+            </div>
+            
+            <Toaster />
+          </div>
+        )}
       </TooltipProvider>
     </QueryClientProvider>
   );
