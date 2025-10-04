@@ -4,24 +4,7 @@ import path from "path";
 import { fileURLToPath } from 'url';
 
 export default defineConfig({
-  plugins: [
-    react(),
-    // Only load Replit plugins when running on Replit
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-runtime-error-modal").then((m) =>
-            m.default(),
-          ),
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
-  ],
+  plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(path.dirname(fileURLToPath(import.meta.url)), "client", "src"),
@@ -35,6 +18,9 @@ export default defineConfig({
     emptyOutDir: true,
   },
   server: {
+    host: true,
+    port: 5000,
+    open: true,
     fs: {
       strict: true,
       deny: ["**/.*"],

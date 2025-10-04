@@ -10,27 +10,30 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Signup() {
   const [, setLocation] = useLocation();
   const { signup } = useAuth();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Accept any credentials and sign up
-    signup(username, password);
-    // Navigate to dashboard
-    setLocation("/");
+    signup(firstName, lastName, email, username, password);
+    // Redirect to login page after signup
+    setLocation("/login");
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen w-full flex items-start justify-center bg-background p-4 py-8 sm:py-12 overflow-y-auto">
       <div className="w-full max-w-md">
         {/* Logo and Title */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-4">
-            <BookOpen className="w-10 h-10 text-primary-foreground" />
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-lg flex items-center justify-center mb-3">
+            <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Torah Bot</h1>
-          <p className="text-muted-foreground mt-2">Study Dashboard</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Torah Bot</h1>
+          <p className="text-sm text-muted-foreground mt-1">Study Dashboard</p>
         </div>
 
         {/* Signup Card */}
@@ -43,6 +46,42 @@ export default function Signup() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  placeholder="Enter your first name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  placeholder="Enter your last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full"
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="username">Username</Label>
                 <Input

@@ -10,27 +10,27 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Login() {
   const [, setLocation] = useLocation();
   const { login } = useAuth();
-  const [username, setUsername] = useState("");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Accept any credentials and log in
-    login(username, password);
+    login(usernameOrEmail, password);
     // Navigate to dashboard
     setLocation("/");
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-background p-4">
+    <div className="min-h-screen w-full flex items-start justify-center bg-background p-4 py-8 sm:py-12 overflow-y-auto">
       <div className="w-full max-w-md">
         {/* Logo and Title */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mb-4">
-            <BookOpen className="w-10 h-10 text-primary-foreground" />
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-primary rounded-lg flex items-center justify-center mb-3">
+            <BookOpen className="w-8 h-8 sm:w-10 sm:h-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground">Torah Bot</h1>
-          <p className="text-muted-foreground mt-2">Study Dashboard</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Torah Bot</h1>
+          <p className="text-sm text-muted-foreground mt-1">Study Dashboard</p>
         </div>
 
         {/* Login Card */}
@@ -44,13 +44,13 @@ export default function Login() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="usernameOrEmail">Username or Email</Label>
                 <Input
-                  id="username"
+                  id="usernameOrEmail"
                   type="text"
-                  placeholder="Enter your username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your username or email"
+                  value={usernameOrEmail}
+                  onChange={(e) => setUsernameOrEmail(e.target.value)}
                   required
                   className="w-full"
                 />

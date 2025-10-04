@@ -1,6 +1,8 @@
-import { Search, Bell, Menu, Sun, Moon } from "lucide-react";
+import { Search, Bell, Menu, Sun, Moon, LogOut } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
+import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "wouter";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -10,6 +12,15 @@ interface HeaderProps {
 export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
   const [isDark, setIsDark] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const { getUserData, logout } = useAuth();
+  const [, setLocation] = useLocation();
+  const userData = getUserData();
+  const displayName = userData ? `${userData.firstName} ${userData.lastName}` : "User";
+
+  const handleLogout = () => {
+    logout();
+    setLocation("/signup");
+  };
 
   useEffect(() => {
     if (menuButtonRef.current) {
@@ -103,13 +114,23 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary overflow-hidden flex-shrink-0">
             <img
               src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face"
-              alt="Chaim Cohen"
+              alt={displayName}
               className="w-full h-full object-cover"
             />
           </div>
           <div className="hidden sm:block">
-            <div className="text-sm font-medium text-foreground truncate max-w-[100px] lg:max-w-none">Chaim Cohen</div>
+            <div className="text-sm font-medium text-foreground truncate max-w-[100px] lg:max-w-none">{displayName}</div>
           </div>
+          
+          {/* Logout button */}
+          <button
+            onClick={handleLogout}
+            className="p-2 rounded-lg hover:bg-destructive/10 hover:text-destructive transition-colors duration-200"
+            aria-label="Logout"
+            title="Logout"
+          >
+            <LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
+          </button>
         </div>
       </div>
     </header>

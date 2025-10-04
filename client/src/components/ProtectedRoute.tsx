@@ -12,8 +12,8 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!isAuthenticated) {
-      // Redirect to signup if not authenticated
-      setLocation("/signup");
+      // Redirect to login if not authenticated
+      setLocation("/login");
     }
   }, [isAuthenticated, setLocation]);
 
