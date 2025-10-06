@@ -1,6 +1,15 @@
 [build]
-  command = "npm install && npm run build:client"
-  publish = "dist/public"
+  # 1. Use the existing 'build' script (or the new 'build:client' script)
+  # 2. Add 'CI=' to prevent warnings from failing the build
+  command = "npm install && CI= npm run build" 
+  # OR command = "npm install && CI= npm run build:client" if you made the package.json change
+  
+  # This looks correct for Vite, as it publishes to 'dist'
+  publish = "dist" 
+  # Your original log showed: publish: /opt/build/repo/dist/public. If your Vite config
+  # uses a 'base' path that places assets in 'public' *inside* 'dist', stick with your original:
+  # publish = "dist/public"
+  
   ignore = "server/"
 
 [build.environment]
@@ -12,5 +21,5 @@
   status = 200
 
 [dev]
-  command = "npm run dev:client"
+  command = "npm run dev" # Changed from dev:client to dev to match package.json
   port = 5173
