@@ -7,6 +7,7 @@
       "predev": "node scripts/ensure-install.cjs",
       "dev": "vite",
       "build": "vite build",
+	"build:client": "npm run build",
       "preview": "vite preview",
       "check": "tsc"
     },
