@@ -9,9 +9,18 @@ import {
   Menu,
   ScrollText,
   Calendar,
-  Settings,
-  HelpCircle,
-  X
+  ChevronDown,
+  ChevronRight,
+  Star,
+  Download,
+  X,
+  Heart,
+  FileText,
+  Flame,
+  Scale,
+  Users,
+  Lightbulb,
+  Sparkles
 } from "lucide-react";
 
 interface SidebarProps {
@@ -19,16 +28,38 @@ interface SidebarProps {
   onToggle: () => void;
 }
 
-const menuItems = [
+interface MenuItem {
+  path: string;
+  label: string;
+  icon: any;
+  subItems?: MenuItem[];
+}
+
+const menuItems: MenuItem[] = [
   { path: "/", label: "Main Dashboard", icon: Home },
-  { path: "/mishvah", label: "Mishvah", icon: BookOpen },
-  { path: "/talmud", label: "Talmud", icon: ScrollText },
-  { path: "/weekly-portion", label: "Weekly Torah Portion", icon: Calendar, active: true },
-  { path: "/subjects", label: "Subjects", icon: BookOpen },
-  { path: "/departments", label: "Departments", icon: Settings },
-  { path: "/matoim", label: "Matoim", icon: HelpCircle },
+  { 
+    path: "/lessons", 
+    label: "Lessons", 
+    icon: BookOpen,
+    subItems: [
+      { path: "/lessons/weekly-portion", label: "1. Weekly Torah Portion", icon: Calendar },
+      { path: "/lessons/mishnah", label: "2. Mishnah", icon: BookOpen },
+      { path: "/lessons/talmud", label: "3. Talmud (Gemara)", icon: ScrollText },
+      { path: "/lessons/daily-halacha", label: "4. Daily Halacha", icon: Scale },
+      { path: "/lessons/ethics-mussar", label: "5. Jewish Ethics & Mussar", icon: Heart },
+      { path: "/lessons/aggadic-stories", label: "6. Aggadic Stories", icon: Sparkles },
+      { path: "/lessons/holidays", label: "7. Jewish Holidays", icon: Calendar },
+      { path: "/lessons/biblical-figures", label: "8. Biblical Figures", icon: Users },
+      { path: "/lessons/shabbat", label: "9. Shabbat", icon: Flame },
+      { path: "/lessons/kashrut", label: "10. Kashrut", icon: FileText },
+      { path: "/lessons/relationships", label: "11. Torah on Relationships", icon: Heart },
+      { path: "/lessons/likutei-sichos", label: "12. Likutei Sichos", icon: Lightbulb },
+    ]
+  },
+  { path: "/continue-learning", label: "Continue Learning", icon: BookOpen },
+  { path: "/favorites", label: "My Favorites", icon: Star },
+  { path: "/my-pdfs", label: "My PDFs", icon: Download },
   { path: "/accounts", label: "Accounts", icon: User },
-  { path: "/holiday", label: "Holiday", icon: Calendar },
   { path: "/history", label: "History & Resources", icon: History },
 ];
 
@@ -38,6 +69,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(!isOpen);
   const [isMobile, setIsMobile] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({ "/lessons": true });
 
   // Check if device is mobile
   useEffect(() => {
@@ -235,7 +267,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
         </div>
 
         {/* Navigation */}
-        <div className={`space-y-2 ${collapsed ? 'p-2' : 'p-4'}`}>
+        <div className={`space-y-1 ${collapsed ? 'p-2' : 'p-4'} overflow-y-auto flex-1`}>
           {!collapsed && (
             <div className="sidebar-text text-xs text-sidebar-foreground/60 mb-4 uppercase tracking-wider px-1">
               Main Menu
@@ -243,53 +275,130 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
           )}
           
           {menuItems.map((item) => {
-            const isActive = item.path === location || item.active;
+            const isActive = item.path === location;
+            const isExpanded = expandedMenus[item.path];
+            const hasSubItems = item.subItems && item.subItems.length > 0;
             const Icon = item.icon;
             
             return (
-              <Link key={item.path} href={item.path}>
-                <div
-                  data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
-                  className={`
-                    flex items-center rounded-lg transition-all duration-200 cursor-pointer group relative
-                    ${collapsed 
-                      ? 'justify-center p-3 mx-1' 
-                      : 'gap-3 px-3 py-2'
-                    }
-                    ${isActive 
-                      ? 'bg-sidebar-primary text-sidebar-primary-foreground' 
-                      : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                    }
-                  `}
-                  title={collapsed ? item.label : undefined}
-                  onClick={(e) => {
-                    // Auto-collapse sidebar on mobile when link is clicked
-                    if (isMobile && isOpen && !isAnimating) {
-                      // Small delay to allow navigation to start
-                      setTimeout(() => {
-                        onToggle();
-                      }, 100);
-                    }
-                  }}
-                >
-                  <Icon className="w-5 h-5 flex-shrink-0" />
-                  {!collapsed && (
-                    <span className="sidebar-text text-sm font-medium whitespace-nowrap">{item.label}</span>
-                  )}
-                  {!collapsed && item.path !== "/" && (
-                    <div className="ml-auto">
-                      <div className="w-1 h-1 bg-current rounded-full opacity-60" />
+              <div key={item.path}>
+                {/* Main Menu Item */}
+                {hasSubItems ? (
+                  <div
+                    data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                    className={`
+                      flex items-center rounded-lg transition-all duration-200 cursor-pointer group relative
+                      ${collapsed 
+                        ? 'justify-center p-3 mx-1' 
+                        : 'gap-3 px-3 py-2'
+                      }
+                      ${isActive 
+                        ? 'bg-sidebar-primary text-sidebar-primary-foreground' 
+                        : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      }
+                    `}
+                    title={collapsed ? item.label : undefined}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (!collapsed) {
+                        setExpandedMenus(prev => ({ ...prev, [item.path]: !prev[item.path] }));
+                      }
+                    }}
+                  >
+                    <Icon className="w-5 h-5 flex-shrink-0" />
+                    {!collapsed && (
+                      <>
+                        <span className="sidebar-text text-sm font-medium whitespace-nowrap flex-1">{item.label}</span>
+                        {isExpanded ? (
+                          <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                        ) : (
+                          <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                        )}
+                      </>
+                    )}
+                    
+                    {/* Tooltip for collapsed state */}
+                    {collapsed && (
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                        {item.label}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link href={item.path}>
+                    <div
+                      data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                      className={`
+                        flex items-center rounded-lg transition-all duration-200 cursor-pointer group relative
+                        ${collapsed 
+                          ? 'justify-center p-3 mx-1' 
+                          : 'gap-3 px-3 py-2'
+                        }
+                        ${isActive 
+                          ? 'bg-sidebar-primary text-sidebar-primary-foreground' 
+                          : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                        }
+                      `}
+                      title={collapsed ? item.label : undefined}
+                      onClick={(e) => {
+                        // Auto-collapse sidebar on mobile when link is clicked
+                        if (isMobile && isOpen && !isAnimating) {
+                          setTimeout(() => {
+                            onToggle();
+                          }, 100);
+                        }
+                      }}
+                    >
+                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      {!collapsed && (
+                        <span className="sidebar-text text-sm font-medium whitespace-nowrap">{item.label}</span>
+                      )}
+                      
+                      {/* Tooltip for collapsed state */}
+                      {collapsed && (
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
+                          {item.label}
+                        </div>
+                      )}
                     </div>
-                  )}
-                  
-                  {/* Tooltip for collapsed state */}
-                  {collapsed && (
-                    <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-sm rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 whitespace-nowrap z-50">
-                      {item.label}
-                    </div>
-                  )}
-                </div>
-              </Link>
+                  </Link>
+                )}
+                
+                {/* Sub Menu Items */}
+                {hasSubItems && isExpanded && !collapsed && (
+                  <div className="ml-4 mt-1 space-y-1">
+                    {item.subItems!.map((subItem) => {
+                      const SubIcon = subItem.icon;
+                      const isSubActive = subItem.path === location;
+                      
+                      return (
+                        <Link key={subItem.path} href={subItem.path}>
+                          <div
+                            data-testid={`nav-${subItem.label.toLowerCase().replace(/\s+/g, '-')}`}
+                            className={`
+                              flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer
+                              ${isSubActive 
+                                ? 'bg-sidebar-primary/80 text-sidebar-primary-foreground' 
+                                : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                              }
+                            `}
+                            onClick={(e) => {
+                              if (isMobile && isOpen && !isAnimating) {
+                                setTimeout(() => {
+                                  onToggle();
+                                }, 100);
+                              }
+                            }}
+                          >
+                            <SubIcon className="w-4 h-4 flex-shrink-0" />
+                            <span className="sidebar-text text-xs font-medium whitespace-nowrap">{subItem.label}</span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             );
           })}
         </div>

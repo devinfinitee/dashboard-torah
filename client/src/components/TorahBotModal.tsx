@@ -5,12 +5,13 @@ import { gsap } from "gsap";
 interface TorahBotModalProps {
   isOpen: boolean;
   onClose: () => void;
+  initialTopic?: string;
 }
 
-export default function TorahBotModal({ isOpen, onClose }: TorahBotModalProps) {
+export default function TorahBotModal({ isOpen, onClose, initialTopic }: TorahBotModalProps) {
   const modalRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
-  const [selectedTopic, setSelectedTopic] = useState("Choose a Topic");
+  const [selectedTopic, setSelectedTopic] = useState(initialTopic || "Choose a Topic");
   const [selectedInteraction, setSelectedInteraction] = useState("Short Q+A");
   const [userMessage, setUserMessage] = useState("What is spiritual meaning of Shabbat candles?");
   const [showTopicDropdown, setShowTopicDropdown] = useState(false);

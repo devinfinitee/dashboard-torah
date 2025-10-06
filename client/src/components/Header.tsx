@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { gsap } from "gsap";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "wouter";
+import NotificationPanel from "./NotificationPanel";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -11,6 +12,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
   const [isDark, setIsDark] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { getUserData, logout } = useAuth();
   const [, setLocation] = useLocation();
@@ -102,7 +104,7 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
         {/* Notifications */}
         <button
           data-testid="button-notifications"
-          onClick={() => console.log('Notifications clicked')}
+          onClick={() => setNotificationOpen(!notificationOpen)}
           className="relative p-2 rounded-lg hover:bg-accent hover:text-accent-foreground"
         >
           <Bell className="w-5 h-5" />
@@ -133,6 +135,12 @@ export default function Header({ onMenuClick, sidebarOpen }: HeaderProps) {
           </button>
         </div>
       </div>
+      
+      {/* Notification Panel */}
+      <NotificationPanel 
+        isOpen={notificationOpen} 
+        onClose={() => setNotificationOpen(false)} 
+      />
     </header>
   );
 }

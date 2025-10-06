@@ -14,6 +14,24 @@ import Profile from "@/pages/Profile";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import NotFound from "@/pages/not-found";
+import ContinueLearning from "@/pages/ContinueLearning";
+import Favorites from "@/pages/Favorites";
+import MyPDFs from "@/pages/MyPDFs";
+
+// Lesson pages
+import WeeklyTorahPortion from "@/pages/lessons/WeeklyTorahPortion";
+import Mishnah from "@/pages/lessons/Mishnah";
+import Talmud from "@/pages/lessons/Talmud";
+import DailyHalacha from "@/pages/lessons/DailyHalacha";
+import EthicsMussar from "@/pages/lessons/EthicsMussar";
+import AggadicStories from "@/pages/lessons/AggadicStories";
+import Holidays from "@/pages/lessons/Holidays";
+import BiblicalFigures from "@/pages/lessons/BiblicalFigures";
+import Shabbat from "@/pages/lessons/Shabbat";
+import Kashrut from "@/pages/lessons/Kashrut";
+import Relationships from "@/pages/lessons/Relationships";
+import LikuteiSichos from "@/pages/lessons/LikuteiSichos";
+
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
@@ -45,36 +63,86 @@ function Router() {
           <Profile />
         </ProtectedRoute>
       </Route>
-      <Route path="/mishvah">
+      
+      {/* Continue Learning, Favorites, PDFs */}
+      <Route path="/continue-learning">
         <ProtectedRoute>
-          <Dashboard />
+          <ContinueLearning />
         </ProtectedRoute>
       </Route>
-      <Route path="/talmud">
+      <Route path="/favorites">
         <ProtectedRoute>
-          <Dashboard />
+          <Favorites />
         </ProtectedRoute>
       </Route>
-      <Route path="/subjects">
+      <Route path="/my-pdfs">
         <ProtectedRoute>
-          <Dashboard />
+          <MyPDFs />
         </ProtectedRoute>
       </Route>
-      <Route path="/departments">
+      
+      {/* Lesson Routes */}
+      <Route path="/lessons/weekly-portion">
         <ProtectedRoute>
-          <Dashboard />
+          <WeeklyTorahPortion />
         </ProtectedRoute>
       </Route>
-      <Route path="/matoim">
+      <Route path="/lessons/mishnah">
         <ProtectedRoute>
-          <Dashboard />
+          <Mishnah />
         </ProtectedRoute>
       </Route>
-      <Route path="/holiday">
+      <Route path="/lessons/talmud">
         <ProtectedRoute>
-          <Dashboard />
+          <Talmud />
         </ProtectedRoute>
       </Route>
+      <Route path="/lessons/daily-halacha">
+        <ProtectedRoute>
+          <DailyHalacha />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/ethics-mussar">
+        <ProtectedRoute>
+          <EthicsMussar />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/aggadic-stories">
+        <ProtectedRoute>
+          <AggadicStories />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/holidays">
+        <ProtectedRoute>
+          <Holidays />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/biblical-figures">
+        <ProtectedRoute>
+          <BiblicalFigures />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/shabbat">
+        <ProtectedRoute>
+          <Shabbat />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/kashrut">
+        <ProtectedRoute>
+          <Kashrut />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/relationships">
+        <ProtectedRoute>
+          <Relationships />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/lessons/likutei-sichos">
+        <ProtectedRoute>
+          <LikuteiSichos />
+        </ProtectedRoute>
+      </Route>
+      
       <Route component={NotFound} />
     </Switch>
   );
