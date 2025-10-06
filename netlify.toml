@@ -4,13 +4,8 @@
   command = "npm install && CI= npm run build" 
   # OR command = "npm install && CI= npm run build:client" if you made the package.json change
   
-  # This looks correct for Vite, as it publishes to 'dist'
-  publish = "dist" 
-  # Your original log showed: publish: /opt/build/repo/dist/public. If your Vite config
-  # uses a 'base' path that places assets in 'public' *inside* 'dist', stick with your original:
-  # publish = "dist/public"
-  
-  ignore = "server/"
+  # Vite outDir is configured to 'dist/public' in vite.config.ts
+  publish = "dist/public"
 
 [build.environment]
   NODE_VERSION = "18"

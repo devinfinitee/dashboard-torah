@@ -1,11 +1,8 @@
 /**
- * Jewish Data API Services
- * Integrates with Hebcal, Sefaria, and other Jewish data sources
+ * Jewish Data Services (Offline)
+ * This module provides static data and mock functions so the site works without external APIs.
+ * If you later want to re-enable live data, replace these implementations with fetch calls.
  */
-
-// Hebcal API - Jewish Calendar and Torah Readings
-const HEBCAL_API = 'https://www.hebcal.com/hebcal';
-const SEFARIA_API = 'https://www.sefaria.org/api';
 
 export interface TorahPortion {
   name: string;
@@ -31,205 +28,99 @@ export interface DafYomi {
   date: string;
 }
 
+// ----------------------------
+// Static Sample Data
+// ----------------------------
+const STATIC_TORAH_PORTION: TorahPortion = {
+  name: 'Vayishlach',
+  hebrewName: 'וישלח',
+  date: '2025-10-11',
+  hebrewDate: '19 Tishrei 5786',
+  aliyot: 7,
+  verses: 'Genesis 32:4-36:43',
+  summary: 'Jacob prepares to meet Esau, wrestles with an angel, receives the name Israel, and reconciles with Esau.'
+};
+
+const STATIC_HOLIDAYS: JewishHoliday[] = [
+  { title: 'Rosh Hashanah', hebrew: 'ראש השנה', date: '2025-10-01', category: 'holiday', description: 'Jewish New Year; day of judgment and coronation of Hashem.' },
+  { title: 'Yom Kippur', hebrew: 'יום כיפור', date: '2025-10-11', category: 'holiday', description: 'Day of Atonement; fasting and repentance.' },
+  { title: 'Sukkot', hebrew: 'סוכות', date: '2025-10-16', category: 'holiday', description: 'Festival of booths and joy; dwelling in the sukkah and taking the four species.' },
+  { title: 'Chanukah', hebrew: 'חנוכה', date: '2025-12-25', category: 'holiday', description: 'Festival of lights; miracle of the oil and rededication of the Temple.' },
+  { title: 'Purim', hebrew: 'פורים', date: '2026-03-14', category: 'holiday', description: 'Celebration of deliverance as told in Megillat Esther.' },
+];
+
+const STATIC_DAF_YOMI: DafYomi = {
+  name: 'Bava Metzia 12',
+  blatt: 12,
+  date: '2025-10-06'
+};
+
+const STATIC_JEWISH_DATE = '23 Tishrei 5786';
+
+const STATIC_CANDLE_LIGHTING = [
+  { title: 'Candle lighting', date: '2025-10-10T18:15:00', category: 'candles' },
+  { title: 'Havdalah', date: '2025-10-11T19:12:00', category: 'havdalah' }
+];
+
 /**
  * Get current week's Torah portion (Parashat HaShavua)
  */
 export async function getWeeklyTorahPortion(): Promise<TorahPortion | null> {
-  try {
-    const today = new Date();
-    const year = today.getFullYear();
-    
-    // Get Torah readings for the current year
-    const response = await fetch(
-      `${HEBCAL_API}?v=1&cfg=json&year=${year}&month=x&ss=on&mf=on&c=on&geo=geoname&geonameid=281184&M=on&s=on`
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch Torah portion');
-    
-    const data = await response.json();
-    
-    // Find the current week's Torah reading
-    const currentReading = data.items?.find((item: any) => {
-      if (item.category === 'parashat') {
-        const itemDate = new Date(item.date);
-        const daysDiff = Math.abs(today.getTime() - itemDate.getTime()) / (1000 * 60 * 60 * 24);
-        return daysDiff <= 7; // Within a week
-      }
-      return false;
-    });
-    
-    if (!currentReading) return null;
-    
-    return {
-      name: currentReading.title.replace('Parashat ', ''),
-      hebrewName: currentReading.hebrew || '',
-      date: currentReading.date,
-      hebrewDate: currentReading.hdate || '',
-      aliyot: 7,
-      verses: currentReading.link || '',
-      summary: currentReading.memo
-    };
-  } catch (error) {
-    console.error('Error fetching Torah portion:', error);
-    return null;
-  }
+  // Offline: return static value
+  return Promise.resolve(STATIC_TORAH_PORTION);
 }
 
 /**
  * Get upcoming Jewish holidays
  */
 export async function getUpcomingHolidays(limit: number = 5): Promise<JewishHoliday[]> {
-  try {
-    const today = new Date();
-    const year = today.getFullYear();
-    
-    const response = await fetch(
-      `${HEBCAL_API}?v=1&cfg=json&year=${year}&month=x&maj=on&min=on&mod=on&nx=on&mf=on&ss=on&c=on`
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch holidays');
-    
-    const data = await response.json();
-    
-    // Filter upcoming holidays
-    const holidays = data.items
-      ?.filter((item: any) => {
-        const itemDate = new Date(item.date);
-        return itemDate >= today && item.category === 'holiday';
-      })
-      .slice(0, limit)
-      .map((item: any) => ({
-        title: item.title,
-        hebrew: item.hebrew || '',
-        date: item.date,
-        category: item.category,
-        description: item.memo
-      }));
-    
-    return holidays || [];
-  } catch (error) {
-    console.error('Error fetching holidays:', error);
-    return [];
-  }
+  // Offline: slice the static list
+  return Promise.resolve(STATIC_HOLIDAYS.slice(0, limit));
 }
 
 /**
  * Get Daf Yomi (daily Talmud page)
  */
 export async function getDafYomi(): Promise<DafYomi | null> {
-  try {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    
-    const response = await fetch(
-      `${HEBCAL_API}?v=1&cfg=json&year=${year}&month=${month}&dy=on`
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch Daf Yomi');
-    
-    const data = await response.json();
-    
-    const dafYomi = data.items?.find((item: any) => 
-      item.category === 'dafyomi' && item.date === `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    );
-    
-    if (!dafYomi) return null;
-    
-    return {
-      name: dafYomi.title.replace('Daf Yomi: ', ''),
-      blatt: parseInt(dafYomi.title.match(/\d+/)?.[0] || '0'),
-      date: dafYomi.date
-    };
-  } catch (error) {
-    console.error('Error fetching Daf Yomi:', error);
-    return null;
-  }
+  // Offline: return static
+  return Promise.resolve(STATIC_DAF_YOMI);
 }
 
 /**
  * Get Torah text from Sefaria
  */
 export async function getTorahText(book: string, chapter: number, verse?: number): Promise<any> {
-  try {
-    const ref = verse ? `${book}.${chapter}.${verse}` : `${book}.${chapter}`;
-    const response = await fetch(`${SEFARIA_API}/texts/${ref}?context=0`);
-    
-    if (!response.ok) throw new Error('Failed to fetch Torah text');
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching Torah text:', error);
-    return null;
-  }
+  // Offline: return simple mock
+  return Promise.resolve({
+    ref: verse ? `${book}.${chapter}.${verse}` : `${book}.${chapter}`,
+    he: ["בראשית ברא אלוקים את השמים ואת הארץ"],
+    text: ["In the beginning God created the heavens and the earth."],
+  });
 }
 
 /**
  * Search Sefaria for texts
  */
 export async function searchSefaria(query: string): Promise<any[]> {
-  try {
-    const response = await fetch(`${SEFARIA_API}/search-wrapper?q=${encodeURIComponent(query)}`);
-    
-    if (!response.ok) throw new Error('Failed to search Sefaria');
-    
-    const data = await response.json();
-    return data.hits || [];
-  } catch (error) {
-    console.error('Error searching Sefaria:', error);
-    return [];
-  }
+  // Offline: return static hit-like entries
+  return Promise.resolve([
+    { title: 'Rashi on Bereshit 1:1', ref: 'Rashi on Genesis 1:1', preview: 'Rashi explains why the Torah begins with creation...' },
+    { title: 'Ramban on Bereshit 1:1', ref: 'Ramban on Genesis 1:1', preview: 'Ramban discusses creation ex nihilo...' },
+  ]);
 }
 
 /**
  * Get Jewish date (Hebrew calendar)
  */
 export async function getJewishDate(): Promise<string> {
-  try {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    
-    const response = await fetch(
-      `${HEBCAL_API}?v=1&cfg=json&year=${year}&month=${month}&day=${day}&c=on`
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch Jewish date');
-    
-    const data = await response.json();
-    return data.items?.[0]?.hdate || '';
-  } catch (error) {
-    console.error('Error fetching Jewish date:', error);
-    return '';
-  }
+  // Offline: return static
+  return Promise.resolve(STATIC_JEWISH_DATE);
 }
 
 /**
  * Get candle lighting times
  */
 export async function getCandleLightingTimes(geonameid: number = 281184): Promise<any> {
-  try {
-    const today = new Date();
-    const year = today.getFullYear();
-    
-    const response = await fetch(
-      `${HEBCAL_API}?v=1&cfg=json&year=${year}&month=x&c=on&geo=geoname&geonameid=${geonameid}&M=on&s=on`
-    );
-    
-    if (!response.ok) throw new Error('Failed to fetch candle lighting times');
-    
-    const data = await response.json();
-    
-    // Get this week's candle lighting
-    const candleLighting = data.items?.filter((item: any) => 
-      item.category === 'candles' || item.category === 'havdalah'
-    ).slice(0, 2);
-    
-    return candleLighting || [];
-  } catch (error) {
-    console.error('Error fetching candle lighting times:', error);
-    return [];
-  }
+  // Offline: return static
+  return Promise.resolve(STATIC_CANDLE_LIGHTING);
 }
