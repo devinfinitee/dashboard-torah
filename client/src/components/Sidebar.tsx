@@ -20,8 +20,10 @@ import {
   Scale,
   Users,
   Lightbulb,
-  Sparkles
+  Sparkles,
+  Bot
 } from "lucide-react";
+import { useTopics } from "@/hooks/useTopics";
 
 interface SidebarProps {
   isOpen: boolean;
@@ -35,27 +37,21 @@ interface MenuItem {
   subItems?: MenuItem[];
 }
 
-const menuItems: MenuItem[] = [
+// Icon mapping for different categories
+const categoryIcons: { [key: string]: any } = {
+  "Parasha": Calendar,
+  "Mishnah": BookOpen,
+  "Talmud": ScrollText,
+  "Halacha": Scale,
+  "Ethics": Heart,
+  "Midrash": Sparkles,
+  "History": Users,
+  "Chassidus": Lightbulb,
+};
+
+const staticMenuItems: MenuItem[] = [
   { path: "/", label: "Main Dashboard", icon: Home },
-  { 
-    path: "/lessons", 
-    label: "Lessons", 
-    icon: BookOpen,
-    subItems: [
-      { path: "/lessons/weekly-portion", label: "1. Weekly Torah Portion", icon: Calendar },
-      { path: "/lessons/mishnah", label: "2. Mishnah", icon: BookOpen },
-      { path: "/lessons/talmud", label: "3. Talmud (Gemara)", icon: ScrollText },
-      { path: "/lessons/daily-halacha", label: "4. Daily Halacha", icon: Scale },
-      { path: "/lessons/ethics-mussar", label: "5. Jewish Ethics & Mussar", icon: Heart },
-      { path: "/lessons/aggadic-stories", label: "6. Aggadic Stories", icon: Sparkles },
-      { path: "/lessons/holidays", label: "7. Jewish Holidays", icon: Calendar },
-      { path: "/lessons/biblical-figures", label: "8. Biblical Figures", icon: Users },
-      { path: "/lessons/shabbat", label: "9. Shabbat", icon: Flame },
-      { path: "/lessons/kashrut", label: "10. Kashrut", icon: FileText },
-      { path: "/lessons/relationships", label: "11. Torah on Relationships", icon: Heart },
-      { path: "/lessons/likutei-sichos", label: "12. Likutei Sichos", icon: Lightbulb },
-    ]
-  },
+  { path: "/chat", label: "Interactive Bot", icon: Bot },
   { path: "/continue-learning", label: "Continue Learning", icon: BookOpen },
   { path: "/favorites", label: "My Favorites", icon: Star },
   { path: "/my-pdfs", label: "My PDFs", icon: Download },
@@ -70,6 +66,27 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({ "/lessons": true });
+  const { data: topics, isLoading: loadingTopics } = useTopics();
+  
+  // Build menu items dynamically from API topics
+  const menuItems: MenuItem[] = [
+    ...staticMenuItems.slice(0, 1), // Main Dashboard
+    {
+      path: "/lessons",
+      label: "Lessons",
+      icon: BookOpen,
+      subItems: topics
+        ? topics
+            .sort((a, b) => a.id - b.id) // Sort by ID in ascending order
+            .map((topic) => ({
+              path: `/lessons/${topic.name.toLowerCase().replace(/\s+/g, '-')}`,
+              label: `${topic.id}. ${topic.name}`,
+              icon: categoryIcons[topic.category] || BookOpen,
+            }))
+        : [],
+    },
+    ...staticMenuItems.slice(1), // Rest of menu items
+  ];
 
   // Check if device is mobile
   useEffect(() => {
@@ -379,7 +396,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
                               flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 cursor-pointer
                               ${isSubActive 
                                 ? 'bg-sidebar-primary/80 text-sidebar-primary-foreground' 
-                                : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                                : 'text-sidebar-foreground/80 hover:bg-yellow-600 hover:text-white'
                               }
                             `}
                             onClick={(e) => {

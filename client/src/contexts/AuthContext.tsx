@@ -1,51 +1,89 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { loginUser, registerUser, storeTokens, clearTokens, getAccessToken, type SignupData, type LoginData } from "@/lib/api";
   
   interface AuthContextType {
     isAuthenticated: boolean;
-    login: (usernameOrEmail: string, password: string) => void;
-    signup: (firstName: string, lastName: string, email: string, username: string, password: string) => void;
+    login: (usernameOrEmail: string, password: string) => Promise<void>;
+    signup: (firstName: string, lastName: string, email: string, username: string, password: string, password2: string) => Promise<void>;
     logout: () => void;
     getUserData: () => { firstName: string; lastName: string; email: string; username: string } | null;
+    error: string | null;
+    clearError: () => void;
   }
   
   const AuthContext = createContext<AuthContextType | undefined>(undefined);
   
   export function AuthProvider({ children }: { children: ReactNode }) {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
   
     // Check if user is already authenticated on mount
     useEffect(() => {
-      const authStatus = localStorage.getItem("isAuthenticated");
-      if (authStatus === "true") {
+      const token = getAccessToken();
+      if (token) {
         setIsAuthenticated(true);
       }
     }, []);
   
-    const login = (usernameOrEmail: string, password: string) => {
-      // Accept any credentials as valid
-      // Check if the input matches a stored username or email
-      const storedUsername = localStorage.getItem("username");
-      const storedEmail = localStorage.getItem("email");
-      
-      if (usernameOrEmail === storedUsername || usernameOrEmail === storedEmail) {
+    const login = async (usernameOrEmail: string, password: string) => {
+      try {
+        setError(null);
+        const loginData: LoginData = {
+          username: usernameOrEmail,
+          email: usernameOrEmail,
+          password: password,
+        };
+        
+        const response = await loginUser(loginData);
+        
+        // Store tokens
+        storeTokens(response.access, response.refresh);
+        
+        // Store user data
+        if (response.user) {
+          localStorage.setItem("username", response.user.username);
+          localStorage.setItem("email", response.user.email);
+          if (response.user.firstname) {
+            localStorage.setItem("firstName", response.user.firstname);
+          }
+          if (response.user.lastname) {
+            localStorage.setItem("lastName", response.user.lastname);
+          }
+        } else {
+          // Fallback if user data not in response
+          localStorage.setItem("username", usernameOrEmail);
+        }
+        
         setIsAuthenticated(true);
-        localStorage.setItem("isAuthenticated", "true");
-      } else {
-        // For demo purposes, still allow login but store the username
-        setIsAuthenticated(true);
-        localStorage.setItem("isAuthenticated", "true");
-        localStorage.setItem("username", usernameOrEmail);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Login failed');
+        throw err;
       }
     };
   
-    const signup = (firstName: string, lastName: string, email: string, username: string, password: string) => {
-      // Store user info but DO NOT authenticate yet
-      localStorage.setItem("firstName", firstName);
-      localStorage.setItem("lastName", lastName);
-      localStorage.setItem("email", email);
-      localStorage.setItem("username", username);
-      // Optionally track that a signup occurred (for UX, not auth)
-      localStorage.setItem("justSignedUp", "true");
+    const signup = async (firstName: string, lastName: string, email: string, username: string, password: string, password2: string) => {
+      try {
+        setError(null);
+        const signupData: SignupData = {
+          firstname: firstName,
+          lastname: lastName,
+          username: username,
+          email: email,
+          password: password,
+          password2: password2,
+        };
+        
+        await registerUser(signupData);
+        
+        // Store user info for later use
+        localStorage.setItem("firstName", firstName);
+        localStorage.setItem("lastName", lastName);
+        localStorage.setItem("email", email);
+        localStorage.setItem("username", username);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Signup failed');
+        throw err;
+      }
     };
   
     const getUserData = () => {
@@ -62,15 +100,19 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
   
     const logout = () => {
       setIsAuthenticated(false);
-      localStorage.removeItem("isAuthenticated");
+      clearTokens();
       localStorage.removeItem("username");
       localStorage.removeItem("firstName");
       localStorage.removeItem("lastName");
       localStorage.removeItem("email");
     };
+    
+    const clearError = () => {
+      setError(null);
+    };
   
     return (
-      <AuthContext.Provider value={{ isAuthenticated, login, signup, logout, getUserData }}>
+      <AuthContext.Provider value={{ isAuthenticated, login, signup, logout, getUserData, error, clearError }}>
         {children}
       </AuthContext.Provider>
     );

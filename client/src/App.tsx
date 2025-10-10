@@ -13,6 +13,7 @@ import History from "@/pages/History";
 import Profile from "@/pages/Profile";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
+import Chat from "@/pages/Chat";
 import NotFound from "@/pages/not-found";
 import ContinueLearning from "@/pages/ContinueLearning";
 import Favorites from "@/pages/Favorites";
@@ -46,6 +47,11 @@ function Router() {
       <Route path="/">
         <ProtectedRoute>
           <Dashboard />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/chat">
+        <ProtectedRoute>
+          <Chat />
         </ProtectedRoute>
       </Route>
       <Route path="/weekly-portion">
