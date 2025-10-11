@@ -73,9 +73,15 @@ import { loginUser, registerUser, storeTokens, clearTokens, getAccessToken, type
           password2: password2,
         };
         
-        await registerUser(signupData);
+        const response = await registerUser(signupData);
         
-        // Store user info for later use
+        // Store tokens if returned by backend
+        if (response.access && response.refresh) {
+          storeTokens(response.access, response.refresh);
+          setIsAuthenticated(true);
+        }
+        
+        // Store user info
         localStorage.setItem("firstName", firstName);
         localStorage.setItem("lastName", lastName);
         localStorage.setItem("email", email);

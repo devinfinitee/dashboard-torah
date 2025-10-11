@@ -35,8 +35,8 @@ export default function Signup() {
     
     try {
       await signup(firstName, lastName, email, username, password, password2);
-      // Redirect to login page after successful signup
-      setLocation("/login");
+      // Redirect to dashboard after successful signup (user is now authenticated)
+      setLocation("/");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Signup failed. Please try again.");
     } finally {
