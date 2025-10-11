@@ -65,7 +65,7 @@ export default function Sidebar({ isOpen, onToggle }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(!isOpen);
   const [isMobile, setIsMobile] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
-  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({ "/lessons": true });
+  const [expandedMenus, setExpandedMenus] = useState<{ [key: string]: boolean }>({ "/lessons": false });
   const { data: topics, isLoading: loadingTopics } = useTopics();
   
   // Build menu items dynamically from API topics

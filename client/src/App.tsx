@@ -33,6 +33,7 @@ import Shabbat from "@/pages/lessons/Shabbat";
 import Kashrut from "@/pages/lessons/Kashrut";
 import Relationships from "@/pages/lessons/Relationships";
 import LikuteiSichos from "@/pages/lessons/LikuteiSichos";
+import DynamicLesson from "@/pages/lessons/DynamicLesson";
 
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -147,6 +148,13 @@ function Router() {
       <Route path="/lessons/likutei-sichos">
         <ProtectedRoute>
           <LikuteiSichos />
+        </ProtectedRoute>
+      </Route>
+      
+      {/* Dynamic lesson route - catches any lesson from API */}
+      <Route path="/lessons/:slug">
+        <ProtectedRoute>
+          <DynamicLesson />
         </ProtectedRoute>
       </Route>
       

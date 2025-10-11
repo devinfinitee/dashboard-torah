@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Star, Download, MessageCircle, BookOpen, Clock, TrendingUp, Flame, Target, Award } from "lucide-react";
-import TorahBotModal from "./TorahBotModal";
+import LessonChatBot from "./LessonChatBot";
 import { Progress } from "@/components/ui/progress";
 
 interface Topic {
@@ -296,11 +296,11 @@ export default function LessonTemplate({
         </div>
       </div>
 
-      {/* Torah Bot Modal */}
-      <TorahBotModal 
+      {/* Lesson Chat Bot */}
+      <LessonChatBot 
         isOpen={isBotModalOpen} 
         onClose={() => setIsBotModalOpen(false)}
-        initialTopic={title}
+        lessonTitle={title}
       />
     </div>
   );
